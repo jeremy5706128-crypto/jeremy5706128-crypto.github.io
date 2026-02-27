@@ -1,0 +1,23 @@
+{
+  "name": "OID Studio 价目册",
+  "short_name": "OID Studio",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#8ea7ff",
+  "theme_color": "#8ea7ff",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "./icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

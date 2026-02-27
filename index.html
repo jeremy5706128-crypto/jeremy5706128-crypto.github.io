@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>OID Studio 价目册</title>
+  <style>
+    /*
+      基础样式和动态背景
+
+      该页面为单页应用，所有内容通过 JavaScript 切换不同层级展示。
+      使用渐变动画打造柔和的背景，同时结合毛玻璃效果承载文字内容。
+    */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: #111827;
+      overflow: hidden;
+    }
+
+    /* 动态渐变背景动画 */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(-45deg, #91eae4, #86a8e7, #7f7fd5, #e7c6ff);
+      background-size: 400% 400%;
+      animation: gradientMove 20s ease infinite;
+      z-index: -2;
+    }
+
+    @keyframes gradientMove {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    /* 通用页容器样式 */
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transform: scale(1.05);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .page.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    /* 毛玻璃容器 */
+    .glass {
+      background: rgba(255, 255, 255, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 28px;
+      padding: 32px;
+      max-width: 90vw;
+      width: 600px;
+      color: #111827;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    .center-text {
+      text-align: center;
+    }
+
+    .welcome-title {
+      font-size: 40px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .welcome-subtitle {
+      font-size: 18px;
+      color: #374151;
+      margin-bottom: 24px;
+    }
+
+    .tap-tip {
+      font-size: 15px;
+      color: #6b7280;
+    }
+
+    /* 第二层菜单样式 */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      width: 100%;
+      padding: 8px 0;
+    }
+
+    .menu-item {
+      position: relative;
+      padding: 24px;
+      border-radius: 24px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.24);
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .menu-item:active {
+      transform: scale(0.97);
+    }
+
+    .menu-item h3 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    /* 返回按钮 */
+    .back-btn {
+      position: absolute;
+      top: calc(env(safe-area-inset-top) + 12px);
+      left: 16px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.32);
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #1f2937;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      z-index: 5;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.45);
+    }
+
+    /* 第三层价格列表样式 */
+    .price-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .price-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .price-group-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .price-item {
+      border-radius: 20px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .price-item-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .price-item-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .price-sublist {
+      margin-top: 4px;
+      font-size: 15px;
+      color: #374151;
+    }
+
+    .price-item-desc {
+      font-size: 14px;
+      color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <!-- 一级菜单：欢迎页 -->
+  <div id="page1" class="page active">
+    <div class="glass center-text" onclick="goTo('page2')">
+      <div class="welcome-title">OID&nbsp;STUDIO</div>
+      <div class="welcome-subtitle">欢迎查看我们的价目表</div>
+      <p class="tap-tip">轻触任意位置继续</p>
+    </div>
+  </div>
+
+  <!-- 二级菜单：分类页 -->
+  <div id="page2" class="page">
+    <div class="back-btn" onclick="goTo('page1')">← 返回</div>
+    <div class="glass">
+      <h2 style="font-size:32px;font-weight:700;margin-bottom:24px;color:#111827;text-align:center;">请选择服务项目</h2>
+      <div class="menu-grid">
+        <div class="menu-item" onclick="openCategory('剪发')"><h3>剪发</h3></div>
+        <div class="menu-item" onclick="openCategory('烫发')"><h3>烫发</h3></div>
+        <div class="menu-item" onclick="openCategory('染发')"><h3>染发</h3></div>
+        <div class="menu-item" onclick="openCategory('护理')"><h3>护理</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三级菜单：具体价目页 -->
+  <div id="page3" class="page">
+    <div class="back-btn" onclick="goTo('page2')">← 返回</div>
+    <div class="glass" id="priceContainer">
+      <!-- JS 动态插入内容 -->
+    </div>
+  </div>
+
+  <script>
+    // 当前页面
+    let current = 'page1';
+
+    /**
+     * 切换不同页面并设置显隐状态
+     * @param {string} id 目标页面的 id
+     */
+    function goTo(id) {
+      document.getElementById(current).classList.remove('active');
+      document.getElementById(id).classList.add('active');
+      current = id;
+    }
+
+    // 价目数据定义
+    const data = {
+      '剪发': {
+        items: [
+          {
+            name: '剪发',
+            price: '128 RMB',
+            desc: '根据脸形量身定制发型'
+          }
+        ]
+      },
+      '染发': {
+        items: [
+          {
+            name: '立柜',
+            price: { '长发': '480 RMB', '中长中短发': '384 RMB', '短发': '288 RMB' },
+            desc: '采用国标产品,提供基础的染发服务'
+          },
+          {
+            name: '菲灵',
+            price: { '长发': '680 RMB', '中长中短发': '544 RMB', '短发': '408 RMB' },
+            desc: '菲灵香风系列染膏,优点刺激性味道小,进口原料,染后发质健康发色艳丽雾感强'
+          },
+          {
+            name: '新品预留',
+            price: {},
+            desc: '敬请期待'
+          }
+        ]
+      },
+      '烫发': {
+        sections: [
+          {
+            title: '曲',
+            items: [
+              {
+                name: '莫奈国产高端系列',
+                price: '580 RMB',
+                desc: '较低的ph值,对头发伤害较小.'
+              },
+              {
+                name: '欧莱雅水润探索烫发乳',
+                price: '780 RMB',
+                desc: '进口欧莱雅烫发乳,对头发最友好的pH值,低硫玳配方,健康发质烫后水润不毛躁'
+              }
+            ]
+          },
+          {
+            title: '直',
+            items: [
+              {
+                name: '莫奈国产高端系列',
+                price: { '长发': '580 RMB', '中长中短发': '384 RMB' },
+                desc: '较低的ph值,对头发伤害较小.'
+              },
+              {
+                name: '欧莱雅水润探索直发乳',
+                price: '780 RMB',
+                desc: '进口欧莱雅直发乳,对头发最友好的pH值,低硫玳配方,健康发质烫后水润不毛躁'
+              },
+              {
+                name: '缩毛矫正',
+                price: '780 RMB',
+                desc: '使毛躁发质呈现最自然的直发效果,蛋白矫正护理是一种蛋白植入护理,用过蛋白排列方式改变头发表面光感,对头发本身不受损.'
+              }
+            ]
+          }
+        ]
+      },
+      '护理': {
+        items: [
+          {
+            name: '营养护理',
+            price: '—',
+            desc: '护理项目敬请期待。'
+          }
+        ]
+      }
+    };
+
+    /**
+     * 打开指定分类，并动态生成价目内容
+     * @param {string} category 分类名称
+     */
+    function openCategory(category) {
+      const container = document.getElementById('priceContainer');
+      container.innerHTML = '';
+      // 标题
+      const title = document.createElement('h2');
+      title.textContent = category;
+      title.style.fontSize = '32px';
+      title.style.fontWeight = '700';
+      title.style.marginBottom = '20px';
+      title.style.color = '#111827';
+      container.appendChild(title);
+      const sectionData = data[category];
+      // 分类存在分段时
+      if (sectionData.sections) {
+        sectionData.sections.forEach(sec => {
+          const group = document.createElement('div');
+          group.className = 'price-group';
+          const groupTitle = document.createElement('div');
+          groupTitle.className = 'price-group-title';
+          groupTitle.textContent = sec.title;
+          group.appendChild(groupTitle);
+          sec.items.forEach(item => {
+            group.appendChild(buildPriceItem(item));
+          });
+          container.appendChild(group);
+        });
+      }
+      // 分类存在直接列表项
+      if (sectionData.items) {
+        sectionData.items.forEach(item => {
+          container.appendChild(buildPriceItem(item));
+        });
+      }
+      goTo('page3');
+    }
+
+    /**
+     * 构建单价项元素
+     * @param {Object} item 单价项数据
+     */
+    function buildPriceItem(item) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'price-item';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'price-item-title';
+      nameEl.textContent = item.name;
+      wrapper.appendChild(nameEl);
+      if (typeof item.price === 'string' || item.price instanceof String) {
+        const priceEl = document.createElement('div');
+        priceEl.className = 'price-item-price';
+        priceEl.textContent = item.price;
+        wrapper.appendChild(priceEl);
+      } else {
+        const priceList = document.createElement('div');
+        priceList.className = 'price-sublist';
+        const entries = Object.entries(item.price);
+        priceList.innerHTML = entries.map(([k, v]) => `${k}: ${v}`).join('<br>');
+        wrapper.appendChild(priceList);
+      }
+      const descEl = document.createElement('div');
+      descEl.className = 'price-item-desc';
+      descEl.textContent = item.desc;
+      wrapper.appendChild(descEl);
+      return wrapper;
+    }
+  </script>
+</body>
+</html>
